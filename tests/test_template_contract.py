@@ -39,6 +39,34 @@ def test_minimal_project_has_no_optional_dependencies(
     assert "docs" not in pyproject["dependency-groups"]
 
 
+def test_minimal_project_has_quality_workflows(
+    tmp_path: Path,
+    default_answers: dict[str, Any],
+) -> None:
+    project = render_project(tmp_path / "minimal", default_answers)
+    readme = (project / "README.md").read_text()
+    workflow = (project / ".github/workflows/ci.yml").read_text()
+
+    for command in (
+        "uv sync --all-groups",
+        "uv run pytest",
+        "uv run ruff check .",
+        "uv run ruff format --check .",
+        "uv run mypy src",
+        "uv run pre-commit install",
+        "uv build",
+    ):
+        assert command in readme
+    assert (project / ".pre-commit-config.yaml").is_file()
+    assert "lint:" in workflow
+    assert "format:" in workflow
+    assert "type-check:" in workflow
+    assert "test:" in workflow
+    assert "uv sync --locked --all-groups" in workflow
+    assert "${{" in workflow
+    assert "[[" not in workflow
+
+
 def test_copier_configuration_has_expected_defaults() -> None:
     config = yaml.safe_load((TEMPLATE_ROOT / "copier.yml").read_text())
 
