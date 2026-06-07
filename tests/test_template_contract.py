@@ -149,6 +149,30 @@ def test_docker_feature_is_conditional(
     assert 'CMD ["example-project"]' in (docker_cli / "Dockerfile").read_text()
 
 
+def test_release_feature_creates_github_artifacts_only(
+    tmp_path: Path,
+    default_answers: dict[str, Any],
+) -> None:
+    minimal = render_project(tmp_path / "minimal", default_answers)
+    release = render_project(
+        tmp_path / "release",
+        {**default_answers, "include_release": True},
+    )
+
+    assert not (minimal / ".github/workflows/release.yml").exists()
+
+    workflow = (release / ".github/workflows/release.yml").read_text()
+    assert "tags:" in workflow
+    assert "uv sync --locked --all-groups" in workflow
+    assert "uv build" in workflow
+    assert "uv run twine check dist/*" in workflow
+    assert "gh release create" in workflow
+    assert "contents: write" in workflow
+    assert "uv publish" not in workflow
+    assert "id-token: write" not in workflow
+    assert "pypi" not in workflow.lower()
+
+
 def test_copier_configuration_has_expected_defaults() -> None:
     config = yaml.safe_load((TEMPLATE_ROOT / "copier.yml").read_text())
 

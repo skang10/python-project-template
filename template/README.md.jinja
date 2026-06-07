@@ -54,3 +54,10 @@ docker build -t [[ distribution_name ]] .
 docker run --rm [[ distribution_name ]]
 ```
 [% endif %]
+
+[% if include_release %]
+## Releases
+
+Push a `v*` tag to run checks, build source and wheel distributions, and attach
+them to a GitHub Release. This workflow does not publish to PyPI.
+[% endif %]
