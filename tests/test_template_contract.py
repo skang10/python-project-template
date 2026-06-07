@@ -90,6 +90,38 @@ def test_cli_feature_is_conditional(
     assert "uv run example-project hello World" in (cli / "README.md").read_text()
 
 
+def test_docs_feature_is_conditional(
+    tmp_path: Path,
+    default_answers: dict[str, Any],
+) -> None:
+    minimal = render_project(tmp_path / "minimal", default_answers)
+    docs = render_project(
+        tmp_path / "docs",
+        {**default_answers, "include_docs": True},
+    )
+
+    assert not (minimal / "mkdocs.yml").exists()
+    assert not (minimal / "docs").exists()
+    assert (
+        "docs"
+        not in tomllib.loads((minimal / "pyproject.toml").read_text())[
+            "dependency-groups"
+        ]
+    )
+
+    assert (docs / "mkdocs.yml").is_file()
+    assert (docs / "docs/index.md").is_file()
+    assert (docs / "docs/usage.md").is_file()
+    assert (
+        "mkdocs-material>=9.6"
+        in tomllib.loads((docs / "pyproject.toml").read_text())["dependency-groups"][
+            "docs"
+        ]
+    )
+    assert "uv run mkdocs serve" in (docs / "README.md").read_text()
+    assert "docs:" in (docs / ".github/workflows/ci.yml").read_text()
+
+
 def test_copier_configuration_has_expected_defaults() -> None:
     config = yaml.safe_load((TEMPLATE_ROOT / "copier.yml").read_text())
 

@@ -36,3 +36,12 @@ uv build
 uv run [[ distribution_name ]] hello World
 ```
 [% endif %]
+
+[% if include_docs %]
+## Documentation
+
+```bash
+uv run mkdocs serve
+uv run mkdocs build --strict
+```
+[% endif %]

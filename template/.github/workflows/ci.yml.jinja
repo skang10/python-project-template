@@ -60,3 +60,17 @@ jobs:
           version: "0.11.19"
       - run: uv sync --locked --all-groups
       - run: uv run pytest
+
+[% if include_docs %]
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+      - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        with:
+          enable-cache: true
+          python-version: "3.12"
+          version: "0.11.19"
+      - run: uv sync --locked --all-groups
+      - run: uv run mkdocs build --strict
+[% endif %]
