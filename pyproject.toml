@@ -1,0 +1,31 @@
+[project]
+name = "python-project-template"
+version = "0.1.0"
+description = "A tested Copier template for general-purpose Python projects."
+requires-python = ">=3.12"
+dependencies = []
+
+[dependency-groups]
+dev = [
+  "copier>=9,<10",
+  "mypy>=1.15",
+  "pytest>=8.3",
+  "pyyaml>=6.0",
+  "ruff>=0.11",
+]
+
+[tool.pytest.ini_options]
+addopts = "-ra"
+testpaths = ["tests"]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 88
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+files = ["tests"]
