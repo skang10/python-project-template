@@ -225,3 +225,13 @@ def test_template_readme_documents_generation_and_updates() -> None:
     assert "copier update --trust" in readme
     assert "GitHub Releases" in readme
     assert "does not publish to PyPI" in readme
+
+
+def test_template_repository_has_ci() -> None:
+    workflow = (TEMPLATE_ROOT / ".github/workflows/ci.yml").read_text()
+
+    assert "uv run ruff check ." in workflow
+    assert "uv run ruff format --check ." in workflow
+    assert "uv run mypy tests" in workflow
+    assert "uv run pytest" in workflow
+    assert "docker" in workflow.lower()
