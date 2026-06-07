@@ -122,6 +122,33 @@ def test_docs_feature_is_conditional(
     assert "docs:" in (docs / ".github/workflows/ci.yml").read_text()
 
 
+def test_docker_feature_is_conditional(
+    tmp_path: Path,
+    default_answers: dict[str, Any],
+) -> None:
+    minimal = render_project(tmp_path / "minimal", default_answers)
+    docker = render_project(
+        tmp_path / "docker",
+        {**default_answers, "include_docker": True},
+    )
+    docker_cli = render_project(
+        tmp_path / "docker-cli",
+        {**default_answers, "include_docker": True, "include_cli": True},
+    )
+
+    assert not (minimal / "Dockerfile").exists()
+    assert not (minimal / ".dockerignore").exists()
+
+    dockerfile = (docker / "Dockerfile").read_text()
+    assert "FROM python:3.12-slim" in dockerfile
+    assert "uv sync --locked --no-dev" in dockerfile
+    assert "USER app" in dockerfile
+    assert 'CMD ["python"]' in dockerfile
+    assert (docker / ".dockerignore").is_file()
+
+    assert 'CMD ["example-project"]' in (docker_cli / "Dockerfile").read_text()
+
+
 def test_copier_configuration_has_expected_defaults() -> None:
     config = yaml.safe_load((TEMPLATE_ROOT / "copier.yml").read_text())
 

@@ -45,3 +45,12 @@ uv run mkdocs serve
 uv run mkdocs build --strict
 ```
 [% endif %]
+
+[% if include_docker %]
+## Docker
+
+```bash
+docker build -t [[ distribution_name ]] .
+docker run --rm [[ distribution_name ]]
+```
+[% endif %]
