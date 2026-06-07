@@ -215,3 +215,13 @@ def test_invalid_package_name_is_rejected(
 
     assert result.returncode != 0
     assert "valid Python identifier" in result.stderr
+
+
+def test_template_readme_documents_generation_and_updates() -> None:
+    readme = (TEMPLATE_ROOT / "README.md").read_text()
+
+    assert "copier copy --trust" in readme
+    assert "uv run pytest" in readme
+    assert "copier update --trust" in readme
+    assert "GitHub Releases" in readme
+    assert "does not publish to PyPI" in readme
