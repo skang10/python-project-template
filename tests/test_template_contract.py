@@ -101,11 +101,18 @@ def test_cli_feature_is_conditional(
     assert (cli / "src/example_project/cli.py").is_file()
     assert (cli / "tests/test_cli.py").is_file()
     pyproject = tomllib.loads((cli / "pyproject.toml").read_text())
+    minimal_readme = (minimal / "README.md").read_text()
+    cli_readme = (cli / "README.md").read_text()
     assert "typer>=0.15" in pyproject["project"]["dependencies"]
     assert pyproject["project"]["scripts"] == {
         "example-project": "example_project.cli:app"
     }
-    assert "uv run example-project hello World" in (cli / "README.md").read_text()
+    assert "## CLI" not in minimal_readme
+    assert "`src/example_project/cli.py`" not in minimal_readme
+    assert "uv run example-project --help" in cli_readme
+    assert "uv run example-project hello World" in cli_readme
+    assert "`src/example_project/cli.py`" in cli_readme
+    assert "`tests/test_cli.py`" in cli_readme
 
 
 def test_docs_feature_is_conditional(
@@ -130,13 +137,22 @@ def test_docs_feature_is_conditional(
     assert (docs / "mkdocs.yml").is_file()
     assert (docs / "docs/index.md").is_file()
     assert (docs / "docs/usage.md").is_file()
+    minimal_readme = (minimal / "README.md").read_text()
+    docs_readme = (docs / "README.md").read_text()
     assert (
         "mkdocs-material>=9.6"
         in tomllib.loads((docs / "pyproject.toml").read_text())["dependency-groups"][
             "docs"
         ]
     )
-    assert "uv run mkdocs serve" in (docs / "README.md").read_text()
+    assert "## Documentation" not in minimal_readme
+    assert "http://127.0.0.1:8000" not in minimal_readme
+    assert "uv run mkdocs serve" in docs_readme
+    assert "http://127.0.0.1:8000" in docs_readme
+    assert "uv run mkdocs build --strict" in docs_readme
+    assert "`site/`" in docs_readme
+    assert "`docs/`" in docs_readme
+    assert "`mkdocs.yml`" in docs_readme
     assert "docs:" in (docs / ".github/workflows/ci.yml").read_text()
 
 
@@ -157,6 +173,9 @@ def test_docker_feature_is_conditional(
     assert not (minimal / "Dockerfile").exists()
     assert not (minimal / ".dockerignore").exists()
 
+    minimal_readme = (minimal / "README.md").read_text()
+    docker_readme = (docker / "README.md").read_text()
+    docker_cli_readme = (docker_cli / "README.md").read_text()
     dockerfile = (docker / "Dockerfile").read_text()
     assert "FROM python:3.12-slim" in dockerfile
     assert "uv sync --locked --no-dev" in dockerfile
@@ -165,6 +184,10 @@ def test_docker_feature_is_conditional(
     assert (docker / ".dockerignore").is_file()
 
     assert 'CMD ["example-project"]' in (docker_cli / "Dockerfile").read_text()
+    assert "## Docker" not in minimal_readme
+    assert "docker build -t example-project ." in docker_readme
+    assert "docker run --rm example-project" in docker_readme
+    assert "docker run --rm example-project hello World" in docker_cli_readme
 
 
 def test_release_feature_creates_github_artifacts_only(
@@ -179,6 +202,8 @@ def test_release_feature_creates_github_artifacts_only(
 
     assert not (minimal / ".github/workflows/release.yml").exists()
 
+    minimal_readme = (minimal / "README.md").read_text()
+    release_readme = (release / "README.md").read_text()
     workflow = (release / ".github/workflows/release.yml").read_text()
     assert "tags:" in workflow
     assert "uv sync --locked --all-groups" in workflow
@@ -189,6 +214,11 @@ def test_release_feature_creates_github_artifacts_only(
     assert "uv publish" not in workflow
     assert "id-token: write" not in workflow
     assert "pypi" not in workflow.lower()
+    assert "## Releases" not in minimal_readme
+    assert "git tag v0.1.0" in release_readme
+    assert "git push origin v0.1.0" in release_readme
+    assert "GitHub Releases" in release_readme
+    assert "does not publish to PyPI" in release_readme
 
 
 def test_copier_configuration_has_expected_defaults() -> None:
