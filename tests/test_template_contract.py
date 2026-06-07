@@ -58,9 +58,23 @@ def test_minimal_project_has_quality_workflows(
         "uv run ruff format --check .",
         "uv run mypy src",
         "uv run pre-commit install",
+        "uv run pre-commit run --all-files",
         "uv build",
     ):
         assert command in readme
+    for path_description in (
+        "`src/example_project/`",
+        "`tests/`",
+        "`pyproject.toml`",
+        "`uv.lock`",
+    ):
+        assert path_description in readme
+
+    assert "https://docs.astral.sh/uv/getting-started/installation/" in readme
+    assert "## CLI" not in readme
+    assert "## Documentation" not in readme
+    assert "## Docker" not in readme
+    assert "## Releases" not in readme
     assert (project / ".pre-commit-config.yaml").is_file()
     assert "lint:" in workflow
     assert "format:" in workflow

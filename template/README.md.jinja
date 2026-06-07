@@ -5,14 +5,24 @@
 ## Requirements
 
 - Python 3.12+
-- [uv](https://docs.astral.sh/uv/)
+- [uv](https://docs.astral.sh/uv/getting-started/installation/)
 
 ## Setup
+
+Install all dependency groups and configure the Git hooks:
 
 ```bash
 uv sync --all-groups
 uv run pre-commit install
+uv run pre-commit run --all-files
 ```
+
+## Project Layout
+
+- `src/[[ package_name ]]/`: project source code
+- `tests/`: automated tests
+- `pyproject.toml`: project metadata, dependencies, and tool configuration
+- `uv.lock`: resolved dependency lockfile
 
 ## Quality
 
@@ -24,6 +34,8 @@ uv run mypy src
 ```
 
 ## Build
+
+Build source and wheel distributions into `dist/`:
 
 ```bash
 uv build
