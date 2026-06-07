@@ -18,6 +18,10 @@ def test_minimal_project_renders(
     assert (project / "tests/test_package.py").is_file()
     assert (project / ".copier-answers.yml").is_file()
 
+    answers = yaml.safe_load((project / ".copier-answers.yml").read_text())
+    assert answers["_src_path"] == str(TEMPLATE_ROOT)
+    assert answers["_commit"]
+
     pyproject = tomllib.loads((project / "pyproject.toml").read_text())
     assert pyproject["project"]["name"] == "example-project"
     assert pyproject["project"]["requires-python"] == ">=3.12"
