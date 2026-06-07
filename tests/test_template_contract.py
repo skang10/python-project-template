@@ -67,6 +67,29 @@ def test_minimal_project_has_quality_workflows(
     assert "[[" not in workflow
 
 
+def test_cli_feature_is_conditional(
+    tmp_path: Path,
+    default_answers: dict[str, Any],
+) -> None:
+    minimal = render_project(tmp_path / "minimal", default_answers)
+    cli = render_project(
+        tmp_path / "cli",
+        {**default_answers, "include_cli": True},
+    )
+
+    assert not (minimal / "src/example_project/cli.py").exists()
+    assert not (minimal / "tests/test_cli.py").exists()
+
+    assert (cli / "src/example_project/cli.py").is_file()
+    assert (cli / "tests/test_cli.py").is_file()
+    pyproject = tomllib.loads((cli / "pyproject.toml").read_text())
+    assert "typer>=0.15" in pyproject["project"]["dependencies"]
+    assert pyproject["project"]["scripts"] == {
+        "example-project": "example_project.cli:app"
+    }
+    assert "uv run example-project hello World" in (cli / "README.md").read_text()
+
+
 def test_copier_configuration_has_expected_defaults() -> None:
     config = yaml.safe_load((TEMPLATE_ROOT / "copier.yml").read_text())
 

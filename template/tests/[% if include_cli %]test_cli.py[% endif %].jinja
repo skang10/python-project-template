@@ -1,0 +1,12 @@
+from typer.testing import CliRunner
+
+from [[ package_name ]].cli import app
+
+runner = CliRunner()
+
+
+def test_hello() -> None:
+    result = runner.invoke(app, ["hello", "Codex"])
+
+    assert result.exit_code == 0
+    assert result.stdout == "Hello, Codex!\n"

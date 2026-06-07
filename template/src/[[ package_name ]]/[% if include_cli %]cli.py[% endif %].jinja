@@ -1,0 +1,15 @@
+import typer
+
+from [[ package_name ]] import greet
+
+app = typer.Typer(no_args_is_help=True)
+
+
+@app.command()
+def hello(name: str = "World") -> None:
+    """Print a greeting."""
+    typer.echo(greet(name))
+
+
+if __name__ == "__main__":
+    app()

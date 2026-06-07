@@ -28,3 +28,11 @@ uv run mypy src
 ```bash
 uv build
 ```
+
+[% if include_cli %]
+## CLI
+
+```bash
+uv run [[ distribution_name ]] hello World
+```
+[% endif %]
