@@ -1,0 +1,62 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "[[ distribution_name ]]"
+version = "0.1.0"
+description = "[[ project_description ]]"
+readme = "README.md"
+requires-python = ">=3.12"
+license = { file = "LICENSE" }
+authors = [
+  { name = "[[ author_name ]]", email = "[[ author_email ]]" },
+]
+dependencies = [
+[% if include_cli %]
+  "typer>=0.15",
+[% endif %]
+]
+
+[% if include_cli %]
+[project.scripts]
+[[ distribution_name ]] = "[[ package_name ]].cli:app"
+[% endif %]
+
+[project.urls]
+Homepage = "https://github.com/[[ github_owner ]]/[[ github_repository ]]"
+Repository = "https://github.com/[[ github_owner ]]/[[ github_repository ]]"
+Issues = "https://github.com/[[ github_owner ]]/[[ github_repository ]]/issues"
+
+[dependency-groups]
+dev = [
+  "mypy>=1.15",
+  "pre-commit>=4.2",
+  "pytest>=8.3",
+  "ruff>=0.11",
+]
+[% if include_docs %]
+docs = [
+  "mkdocs>=1.6",
+  "mkdocs-material>=9.6",
+]
+[% endif %]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/[[ package_name ]]"]
+
+[tool.pytest.ini_options]
+addopts = "-ra"
+testpaths = ["tests"]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 88
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+files = ["src", "tests"]

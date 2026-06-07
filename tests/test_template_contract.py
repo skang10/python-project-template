@@ -1,4 +1,5 @@
 import subprocess
+import tomllib
 from pathlib import Path
 from typing import Any
 
@@ -16,6 +17,26 @@ def test_minimal_project_renders(
     assert (project / "src/example_project/__init__.py").is_file()
     assert (project / "tests/test_package.py").is_file()
     assert (project / ".copier-answers.yml").is_file()
+
+    pyproject = tomllib.loads((project / "pyproject.toml").read_text())
+    assert pyproject["project"]["name"] == "example-project"
+    assert pyproject["project"]["requires-python"] == ">=3.12"
+    assert pyproject["build-system"]["build-backend"] == "hatchling.build"
+    assert pyproject["dependency-groups"]["dev"]
+    assert (project / ".python-version").read_text().strip() == "3.12"
+    assert (project / "LICENSE").is_file()
+
+
+def test_minimal_project_has_no_optional_dependencies(
+    tmp_path: Path,
+    default_answers: dict[str, Any],
+) -> None:
+    project = render_project(tmp_path / "minimal", default_answers)
+    pyproject = tomllib.loads((project / "pyproject.toml").read_text())
+
+    assert pyproject["project"]["dependencies"] == []
+    assert "scripts" not in pyproject["project"]
+    assert "docs" not in pyproject["dependency-groups"]
 
 
 def test_copier_configuration_has_expected_defaults() -> None:
