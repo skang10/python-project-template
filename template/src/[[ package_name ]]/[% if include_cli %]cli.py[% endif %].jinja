@@ -5,8 +5,13 @@ from [[ package_name ]] import greet
 app = typer.Typer(no_args_is_help=True)
 
 
+@app.callback()
+def main() -> None:
+    """[[ project_name ]] command line interface."""
+
+
 @app.command()
-def hello(name: str = "World") -> None:
+def hello(name: str = typer.Argument("World")) -> None:
     """Print a greeting."""
     typer.echo(greet(name))
 
