@@ -97,13 +97,27 @@ docker run --rm [[ distribution_name ]] hello World
 ## Releases
 
 This project uses [release-please](https://github.com/googleapis/release-please)
-to automate releases. Commit to `main` using
-[Conventional Commits](https://www.conventionalcommits.org/) and release-please
-will maintain an open "Release PR" that tracks unreleased changes:
+to automate releases.
+
+### One-time setup
+
+Enable **"Allow GitHub Actions to create and approve pull requests"** in the
+repository settings under **Settings → Actions → General → Workflow
+permissions**. Without this, release-please cannot open the Release PR.
+
+### How it works
+
+Commit to `main` using [Conventional Commits](https://www.conventionalcommits.org/)
+and release-please will maintain an open "Release PR" that tracks unreleased
+changes:
 
 - `fix:` commits → patch version bump (e.g. `0.1.0` → `0.1.1`)
 - `feat:` commits → minor version bump (e.g. `0.1.0` → `0.2.0`)
 - `feat!:` or `BREAKING CHANGE:` footer → major version bump (e.g. `0.1.0` → `1.0.0`)
+
+Commits that don't match a Conventional Commit prefix (e.g. an initial "Init
+project" commit) are ignored by release-please and won't appear in the
+changelog.
 
 Merging the Release PR cuts the release: release-please tags the commit, creates
 a GitHub Releases entry with a generated changelog, and the build job attaches the
