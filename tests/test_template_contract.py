@@ -1,3 +1,4 @@
+import json
 import subprocess
 import tomllib
 from pathlib import Path
@@ -200,23 +201,41 @@ def test_release_feature_creates_github_artifacts_only(
         {**default_answers, "include_release": True},
     )
 
+    assert not (minimal / ".github/workflows/release-please.yml").exists()
     assert not (minimal / ".github/workflows/release.yml").exists()
 
     minimal_readme = (minimal / "README.md").read_text()
     release_readme = (release / "README.md").read_text()
-    workflow = (release / ".github/workflows/release.yml").read_text()
-    assert "tags:" in workflow
+    workflow = (release / ".github/workflows/release-please.yml").read_text()
+
+    assert "googleapis/release-please-action" in workflow
+    assert "release_created" in workflow
+    assert "branches:" in workflow
     assert "uv sync --locked --all-groups" in workflow
     assert "uv build" in workflow
     assert "uv run twine check dist/*" in workflow
-    assert "gh release create" in workflow
+    assert "gh release upload" in workflow
     assert "contents: write" in workflow
+    assert "pull-requests: write" in workflow
     assert "uv publish" not in workflow
     assert "id-token: write" not in workflow
     assert "pypi" not in workflow.lower()
+    assert "gh release create" not in workflow
+    assert "tags:" not in workflow
+
+    assert (release / "release-please-config.json").is_file()
+    assert (release / ".release-please-manifest.json").is_file()
+
+    config = json.loads((release / "release-please-config.json").read_text())
+    assert config["packages"]["."]["release-type"] == "python"
+
+    manifest = json.loads((release / ".release-please-manifest.json").read_text())
+    assert manifest["."] == "0.1.0"
+
     assert "## Releases" not in minimal_readme
-    assert "git tag v0.1.0" in release_readme
-    assert "git push origin v0.1.0" in release_readme
+    assert "## Releases" in release_readme
+    assert "git tag v0.1.0" not in release_readme
+    assert "Conventional Commit" in release_readme
     assert "GitHub Releases" in release_readme
     assert "does not publish to PyPI" in release_readme
 
