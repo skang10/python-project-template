@@ -14,6 +14,7 @@ _tasks:
 project_name:
   type: str
   help: Human-readable project name
+  placeholder: "My Project"
 
 distribution_name:
   type: str
