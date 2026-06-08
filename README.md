@@ -58,6 +58,44 @@ copier copy --trust --data project_name="My Project" --data include_docker=false
   /path/to/python-project-template my-project
 ```
 
+## Generated Project Structure
+
+Here's `my-project` generated with every optional feature enabled (package name
+`my_project`):
+
+```
+my-project/
+├── .github/
+│   └── workflows/
+│       ├── ci.yml
+│       └── release.yml          # include_release
+├── docs/                        # include_docs
+│   ├── index.md
+│   └── usage.md
+├── src/
+│   └── my_project/
+│       ├── __init__.py
+│       └── cli.py               # include_cli
+├── tests/
+│   ├── test_cli.py              # include_cli
+│   └── test_package.py
+├── .copier-answers.yml
+├── .dockerignore                # include_docker
+├── .gitignore
+├── .pre-commit-config.yaml
+├── .python-version
+├── Dockerfile                   # include_docker
+├── LICENSE
+├── mkdocs.yml                   # include_docs
+├── pyproject.toml
+├── README.md
+└── uv.lock
+```
+
+Files marked with a comment only appear when the corresponding option is
+enabled; declining an option omits its files entirely rather than leaving them
+empty.
+
 ## Optional Features
 
 - Typer CLI
