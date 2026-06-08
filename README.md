@@ -14,6 +14,11 @@ copier copy --trust /path/to/python-project-template my-project
 
 `--trust` permits the template's only post-generation task: `uv lock`.
 
+Copier then asks a series of questions. Answer **"Human-readable project
+name"** with an actual name (e.g. `My Project`) — leaving it blank causes a
+validation error on the next question, since `distribution_name` and
+`package_name` derive their defaults from it.
+
 ## Optional Features
 
 - Typer CLI
