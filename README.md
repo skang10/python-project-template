@@ -14,17 +14,49 @@ copier copy --trust /path/to/python-project-template my-project
 
 `--trust` permits the template's only post-generation task: `uv lock`.
 
-Copier then asks a series of questions one at a time, e.g.:
+Copier then asks a series of questions one at a time. Each `🎤` line is a
+prompt waiting for your input — type an answer and press Enter (Copier is
+waiting on you, not stuck):
 
 ```
+$ copier copy --trust python-project-template my-project
+No git tags found in template; using HEAD as ref
 🎤 Human-readable project name
+   My Project
+🎤 Package distribution name
+   my-project
+🎤 Python import package name
+   my_project
+🎤 project_description
+   A demo project
+🎤 author_name
+   Jane Doe
+🎤 author_email
+   jane@example.com
+🎤 github_owner
+   janedoe
+🎤 github_repository
+   my-project
+🎤 include_cli (bool)
+   Yes
+🎤 include_docker (bool)
+   No
+🎤 include_docs (bool)
+   Yes
+🎤 include_release (bool)
+   No
 ```
 
-This is your cue to type an answer and press Enter — Copier is waiting on
-you, not stuck. Answer **"Human-readable project name"** with an actual name
-(e.g. `My Project`); leaving it blank causes a validation error on the next
-question, since `distribution_name` and `package_name` derive their defaults
-from it.
+Leaving **"Human-readable project name"** blank causes a validation error on
+the next question, since `distribution_name` and `package_name` derive their
+defaults from it.
+
+To skip the prompts, answer non-interactively with `--data`:
+
+```bash
+copier copy --trust --data project_name="My Project" --data include_docker=false \
+  /path/to/python-project-template my-project
+```
 
 ## Optional Features
 
