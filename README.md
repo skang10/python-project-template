@@ -52,3 +52,9 @@ Commit local project changes first, then run:
 ```bash
 copier update --trust
 ```
+
+To change an answer (e.g. enable Docker after the fact), pass `--data`:
+
+```bash
+copier update --trust --data include_docker=true
+```
