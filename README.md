@@ -79,6 +79,10 @@ uv run pytest
 
 ## Update A Generated Project
 
+Run the update from inside the *generated* project (not this template repo) — Copier
+reads `.copier-answers.yml` there to find the template source and your prior answers.
+Check that file if you want to see what answers will be reused.
+
 Commit local project changes first, then run:
 
 ```bash
